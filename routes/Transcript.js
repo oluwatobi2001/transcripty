@@ -1,12 +1,12 @@
 const bodyParser = require("body-parser");
 const Student = require("../models/Result/Student");
 const router = require("express").Router();
-const verifyToken = require("../middleware/auth")
+const {UserRouteVerification} = require("../middleware/auth")
 
 
 const  jsonToPdf = require("../pdfGen")
 
-router.get("/my-transcript/:id", verifyToken,  async(req, res) => {
+router.get("/my-transcript/:id", UserRouteVerification,  async(req, res) => {
 
 const id = req.params.id;
 console.log(id)
@@ -14,7 +14,7 @@ console.log(id)
 try {
 const myResult =  await Student.findById(id); 
 console.log(myResult)
-if (res) {
+if (myResult) {
   res.status(200).json(myResult);  
 }
 else {
@@ -27,7 +27,7 @@ res.status(500).json(err)
 }
 })
 
-router.get("/my-transcript/:id/generate", verifyToken,  async(req, res) => {
+router.get("/my-transcript/:id/generate", UserRouteVerification,  async(req, res) => {
 
   const id = req.params.id;
   try {
@@ -49,33 +49,46 @@ router.get("/my-transcript/:id/generate", verifyToken,  async(req, res) => {
   }
   })
 
-router.get("/allStudents",   async(req, res) => {
 
-const key = req.query.key;
+
+  
+router.get("/allStudents",  UserRouteVerification,  async(req, res) => {
+  const query = req.query.key;
+  const regex = new RegExp(query, 'i'); // 'i' for case-insensitive
+
+  // Build the search query
   try {
-  const myResult = await Student.find({
-    "$or": [
-        {name: {$regex: key, $options: '-i'}},
-        {matricNo: {$regex: key,  $options: '-i'}},
+
+  
+  const items = await Student.find({
+    $or: [
+      { matricNo: { $regex: regex } },
+      { name: { $regex: regex } },
+     // For array fields
     ]
-}, null); 
-  if (myResult) {
-    res.status(200).json(myResult);  
+  });
+
+  res.json(items);
   }
-  else {
-      res.status(400).json("User transcript not available")
-  }
-  
-  
-  } catch (err) {
+  catch (err) {
+    console.log(err)
   res.status(500).json(err)
   }
   })
+
+  router.post("/")
   
-router.post("/addTranscript", verifyToken , async(req, res) => {
+router.post("/addTranscript", UserRouteVerification, async(req, res) => {
+const params = {...req.body}
+const resultDetails = {
+  name: params.name,
+  matricNo: params.matricNo,
+  academiSessionAdmitted: params.academiSessionAdmitted,
+  details: params.details
+}
 
     try {
-      myTrans = await Student.create(req.body);
+      myTrans = await Student.create(resultDetails);
       res.status(200).json(myTrans);
 
 
@@ -87,11 +100,11 @@ router.post("/addTranscript", verifyToken , async(req, res) => {
     }
 })
 
-router.put("/updateResult/:id", verifyToken , async(req, res) => {
+router.put("/updateResult/:id", UserRouteVerification , async(req, res) => {
   const id =  req.params.id;
   const {details} = req.body;
 console.log(id);
-console.log(details)
+console.log(details);
   try {
     myTrans = await Student.findById(id);
     console.log(myTrans)
@@ -103,12 +116,13 @@ res.status(200).json(myTrans)
     
 
   } catch (err) {
-    res.status(500).json(err)
+    console.error(err)
+    res.status(500).json("The requested operation could not be completed at this time. Please try again later")
       
   }
 })
 
-router.delete("/studentResult/:id", verifyToken, async(req, res) => {
+router.delete("/studentResult/:id", UserRouteVerification, async(req, res) => {
   const id =  req.params.id
   try {
     myTrans = await Student.findById(id);

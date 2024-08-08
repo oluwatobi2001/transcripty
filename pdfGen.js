@@ -18,7 +18,16 @@ module.exports  = function (jsonData, outputPath = 'output.pdf') {
 
         const processedStudentTwo = studentInfoTwo.map(o => {
             return [
-                o.courseTitle,  o.courseScore,  o.courseGrade
+                o.courses.courseTitle,  o.courses.courseScore,  o.courses.courseGrade
+            ]
+          
+
+        
+
+        })
+        const processedStudentTwoR= studentInfoTwo.map(o => {
+            return [
+                o.resit.courseTitle,  o.courses.courseScore,  o.courses.courseGrade
             ]
           
 
@@ -28,8 +37,8 @@ module.exports  = function (jsonData, outputPath = 'output.pdf') {
         const table1 = {
             title :  "200 level", 
             headers: ["Student courses", "student score", "student grades"],
-            rows: processedStudentTwo
-        
+            rows: processedStudentTwo,
+        r
         }
         doc.table(table1, {width: 600});
         doc.moveDown();

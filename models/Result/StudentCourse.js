@@ -9,7 +9,7 @@ courseCode:  {
   type: String
 }, 
     courseScore: Number, 
-    courseGrade :  String
+    courseGrade :  String,
        
 
 

@@ -1,29 +1,24 @@
 const mongoose = require("mongoose");
 
 const StudentResultSchema = require("./StudentResult.js").schema
+
 const StudentSchema = new mongoose.Schema({
     name: {
         type: String,
-        required : true
+        required: true
     },
-    matricNo : {
+    matricNo: {
         type: String,
-        
-        unique: true,
-
+        unique: true
     },
-    StudentGender:  {
+    academicSessionAdmitted: {
         type: String,
-       
-    },
-    YearGrad: {
-        type: Number,
-        
+        required: true
     },
     details: {
-        type: [StudentResultSchema] 
-    } 
-    
+        type: [StudentResultSchema],
+        required: true
+    }
+});
 
-})
 module.exports = mongoose.model('Student', StudentSchema);

@@ -1,29 +1,47 @@
 const mongoose = require("mongoose");
+const ResitSchema = require("./Resit.js");
 const SpecialElectives = require("./SpecialElectives.js").schema;
 const  StudentCourseSchema  = require('../Result/StudentCourse.js').schema;
 
 const StudentResultSchema = mongoose.Schema({
   twoHundredLevel: {
-    
-    type: [StudentCourseSchema], // This defines an array of StudentCourseSchema objects
-    default: [] // Optional: provide a default empty array if needed
+    name: String,
+    year: Number,
+    courses: [StudentCourseSchema],
+    resit : [ResitSchema],
+   
   },
   threeHundredLevel: {
-    type: [StudentCourseSchema],
-    default: []
+    name: String,
+    year: Number,
+    courses: [StudentCourseSchema],
+    resit : [ResitSchema],
+   
+   
   },
   fourHundredLevel: {
-    type: [StudentCourseSchema]
-    ,
-    default: []
+    name: String,
+    year: Number,
+    courses: [StudentCourseSchema],
+    resit : [ResitSchema],
+   
+    
   },
   fiveHundredLevel: {
-    type: [StudentCourseSchema],
-    default: []
+    name: String,
+    year: Number,
+    courses: [StudentCourseSchema],
+    resit : [ResitSchema],
+   
+    default: [] 
   },
   sixHundredLevel: {
-    type: [StudentCourseSchema],
-    default: []
+    name: String,
+    year: Number,
+    courses: [StudentCourseSchema],
+    resit : [ResitSchema],
+   
+    default: [] 
   },
   studentElectives : {
     type: [StudentCourseSchema]

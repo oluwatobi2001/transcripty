@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(cors());
 
 
-mongoose.connect('mongodb+srv://tobilyn77:tobilyn77@cluster0.q1jj1nh.mongodb.net/transcript?retryWrites=true&w=majority&appName=Cluster0' ,   /* process.env.MONGO_URL, */ {useNewUrlParser: true,
+mongoose.connect(/* 'mongodb+srv://tobilyn77:tobilyn77@cluster0.q1jj1nh.mongodb.net/transcript?retryWrites=true&w=majority&appName=Cluster0' , */   'mongodb://localhost/locatio' , {useNewUrlParser: true,
  
  }).then(console.log("connected to mongo db")).catch((err) => console.log(err)); 
 
