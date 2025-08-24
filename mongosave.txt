@@ -1,4 +1,0 @@
-mongorestore --uri   mongodb+srv://tobilyn77:tobilyn77@cluster0.q1jj1nh.mongodb.net  --db=transcript C:\Users\Joshua\dump\locatio
-
-
-mongorestore --uri mongodb+srv://tobilyn77:<PASSWORD>@cluster0.q1jj1nh.mongodb.net 

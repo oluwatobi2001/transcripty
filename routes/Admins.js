@@ -1,12 +1,12 @@
 const bodyParser = require("body-parser");
 
 const router = require('express').Router();
-const {UserRouteVerification} = require("../middleware/auth")
+const {UserRouteVerification, checkIsAdmin} = require("../middleware/auth")
 const Admin = require("../models/Auth/Admins");
 
 
 
-console.log(typeof router.get);
+
 router.get("/", UserRouteVerification,   async(req, res) => {
     try {
 const adminInfo = await Admin.find();
@@ -33,8 +33,19 @@ router.put("/:id", UserRouteVerification,  async(req, res) =>{
     
  
 })
-router.delete("/:id",  UserRouteVerification,  async(req, res) =>{
-    
+router.delete("/:id",  UserRouteVerification, checkIsAdmin, async(req, res) =>{
+    const {userId} = req.params;
+    try {
+         const deleteUser =  await Admin.delete(userId);
+    if (deleteUser) {
+        ews.status(200).json({msg: "User deleted Successfully"})
+    }
+     
+    } catch(err) {
+        return res.status(500).json({err: "This action requsted could not be performed at this  time. Please try again shortly. "})
+
+    }
+  
     
 })
 

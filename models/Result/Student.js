@@ -1,22 +1,30 @@
 const mongoose = require("mongoose");
 
-const StudentResultSchema = require("./StudentResult.js").schema
+const StudentRecordSchema = require("./StudentResult.js").schema
 
 const StudentSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
     },
+     email: {
+
+        type: String, 
+        unique: true,
+        required : true
+
+    },
     matricNo: {
         type: String,
-        unique: true
+        unique: true, 
+        required: true
     },
     academicSessionAdmitted: {
         type: String,
         required: true
     },
     details: {
-        type: [StudentResultSchema],
+        type: [StudentRecordSchema],
         required: true
     }
 });

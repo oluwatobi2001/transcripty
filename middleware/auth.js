@@ -7,7 +7,7 @@ const authenticate = async (req, res, next) => {
 const authorizationHeader = req.headers.authorization;
 
 if(!authorizationHeader || !authorizationHeader.startsWith("Bearer") ) {
-    return res.status(401).json({ error: "You are not authorized to access this. No token"})
+    return res.status(401).json({ error: "You are not authorized to access this. Please login"})
 }
 try {
     const token = authorizationHeader.split(" ")[1];
@@ -17,11 +17,11 @@ try {
     }
     const decoded = jwt.verify(token, process.env.SECRET);
     console.log(decoded);
-    if(!decoded || !decoded.UserName ) {
+    if(!decoded || !decoded.userName ) {
         return res.status(401).json({ error: "Invalid token"})
     }
-    console.log(decoded.UserName)
-    const user = await User.find(decoded.UserName)
+    console.log(decoded.UserEmail)
+    const user = await User.find(decoded.UserEmail)
 console.log(user);
     if (!user) {
       return res.status(401).json({ error: "User not found" });
@@ -82,48 +82,22 @@ catch(err) {
 
 }
 }
-const checkVerification = async(req, res, next) => {
-    
-const RegUser = req.body.username;
- try {
-
- 
-const  user =  await User.findOne({username : RegUser})
-console.log(user)
-
-const verifiedUser =  await user.isVerified;
-console.log(verifiedUser)
-if(!verifiedUser) {
-        return res.status(401).json({ error: "You cannot login yet. Verify your account" });
-    }
-    req.user = user;
-    delete req.user.password;
-
-    next();
-
-
-} 
-catch(err) {
-    console.error(err);
-    return res.status(401).json({err})
-
-}
-}
-
 const UserRouteVerification = async(req, res, next) => {
-    const authorizationHeader = req.headers.authorization;
+    const {authorization} = req.headers;
 
-    if(!authorizationHeader || !authorizationHeader.startsWith("Bearer") ) {
+    if(!authorization || !authorization.startsWith("Bearer") ) {
         return res.status(401).json({ error: "You are not authorized to access this. No token"})
     }
     try {
-        const token = authorizationHeader.split(" ")[1];
+        const token = authorization.split(" ")[1];
         if(!token) {
             return res.status(401).json({ error: "You are not authorized to access this. No token"})
         }
+        console.log(process.env.SECRET)
+        console.log(token)
         const decoded = jwt.verify(token, process.env.SECRET);
         console.log(decoded);
-        if(!decoded || !decoded.UserName ) {
+        if(!decoded || !decoded.email) {
             return res.status(401).json({ error: "Invalid token"})
         }
         if( decoded.isVerified === "false") {
@@ -134,7 +108,7 @@ const UserRouteVerification = async(req, res, next) => {
     }
     catch(err) {
     console.log(err);
-    res.status(500).json(err)
+    res.status(500).json({error: "You cannot currently get access to this resource. Please try again soonest."})
     }
 }
-module.exports = { authenticate, checkVerification, checkIsAdmin, UserRouteVerification }
+module.exports = { authenticate,  checkIsAdmin, UserRouteVerification }

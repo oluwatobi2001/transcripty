@@ -8,7 +8,7 @@ const  jsonToPdf = require("../pdfGen")
 
 router.get("/my-transcript/:id", UserRouteVerification,  async(req, res) => {
 
-const id = req.params.id;
+const {id} = req.params;
 console.log(id)
 
 try {
@@ -23,13 +23,13 @@ else {
 
 
 } catch (err) {
-res.status(500).json(err)
+res.status(500).json({err: "Error obtaining the transcript. Please try again later. "})
 }
 })
 
 router.get("/my-transcript/:id/generate", UserRouteVerification,  async(req, res) => {
 
-  const id = req.params.id;
+  const {id} = req.params;
   try {
   const myResult =  await Student.findById(id); 
   if (myResult) { 
@@ -39,13 +39,13 @@ router.get("/my-transcript/:id/generate", UserRouteVerification,  async(req, res
 
   }
   else {
-      res.status(400).json("User transcript not available")
+      res.status(400).json({err:"Users transcript could not be generated. Please try again later"})
   }
   
   
-  } catch (err) {
-  res.status(500).json(err);
-  console.log(err)
+  } catch (err) {console.log(err)
+    res.status(500).json({err:"Users transcript could not be generated. Please try again later"})
+  
   }
   })
 
@@ -76,20 +76,23 @@ router.get("/allStudents",  UserRouteVerification,  async(req, res) => {
   }
   })
 
-  router.post("/")
+  
   
 router.post("/addTranscript", UserRouteVerification, async(req, res) => {
-const params = {...req.body}
-const resultDetails = {
-  name: params.name,
-  matricNo: params.matricNo,
-  academiSessionAdmitted: params.academiSessionAdmitted,
-  details: params.details
-}
+  
+const params = {...req.body?.studentInfo}
 
+console.log(params)
+if(details = null) {
+  return res.status(400).json({err: "user result information missing"})
+}
     try {
-      myTrans = await Student.create(resultDetails);
-      res.status(200).json(myTrans);
+      myTrans = await Student.create({ name: params.name,
+        email: params.email,
+        matricNo: params.matricNo,
+        academicSessionAdmitted: params.academicSessionAdmitted,
+        details: params?.details});
+      res.status(200).json({msg: "Student Info has been successfully created. "});
 
 
 
@@ -101,17 +104,17 @@ const resultDetails = {
 })
 
 router.put("/updateResult/:id", UserRouteVerification , async(req, res) => {
-  const id =  req.params.id;
+  const {id} =  req.params;
+
   const {details} = req.body;
-console.log(id);
-console.log(details);
+
   try {
     myTrans = await Student.findById(id);
     console.log(myTrans)
 if (details) {
 myTrans.details = details;
 await myTrans.save();
-res.status(200).json(myTrans)
+res.status(200).json({msg:"user information updated successfully"})
 }
     
 
@@ -123,7 +126,7 @@ res.status(200).json(myTrans)
 })
 
 router.delete("/studentResult/:id", UserRouteVerification, async(req, res) => {
-  const id =  req.params.id
+  const {id} =  req.params;
   try {
     myTrans = await Student.findById(id);
     try {
@@ -135,7 +138,7 @@ router.delete("/studentResult/:id", UserRouteVerification, async(req, res) => {
     }
 
 
-    res.status(200).status(myTrans);
+    res.status(200).status({msg: "user deleted successfully"});
 
 
   } catch (err) {
