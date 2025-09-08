@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(cors());
 
 
-mongoose.connect(process.env.MONGO_DEV_URL, {useNewUrlParser: true,
+mongoose.connect(process.env.MONGO_PROD_URL, {useNewUrlParser: true,
  
  }).then(console.log("connected to mongo db")).catch((err) => console.log(err)); 
 

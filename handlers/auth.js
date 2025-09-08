@@ -12,10 +12,23 @@ exports.register = async(req, res, next) => {
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(userPassword, salt);
-        console.log(hashedPassword
-        )
+        console.log(hashedPassword );
+
+        const checkIfAdminExist =  await Admin.findOne({ userName: userName});
+        if(checkIfAdminExist){ 
+            res.status(400).json({msg: "User already exists. Enter a unique user details"})
+        }
         const newAdmin = await Admin.create({ userName: userName, userEmail, userPassword : hashedPassword, userRole, firstName, lastName });
+        if(!newAdmin.userName) {
+            res.status(400).json({msg: "User couldn't be registered successfully. Please  check the fields and try again"})
+        }
         const {id} = newAdmin;
+        if (id) {
+            console.log(id)
+        } 
+        else {
+            res.status(400).json({msg: "User creation unsuccessful. try again later"})
+        }
         const userInfo = newAdmin.userName;
         const token = await jwt.sign({id, userInfo}, process.env.SECRET);
 res.status(201).json({id, userName, token});
