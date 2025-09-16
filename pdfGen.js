@@ -1,146 +1,72 @@
-const fs = require('fs');
+
 const PDFDocument = require('pdfkit-table');
 
-module.exports  = function (jsonData, outputPath = 'output.pdf') {
-    const doc = new PDFDocument({margin: 10, size: 'A4' });
-    const stream = fs.createWriteStream(outputPath);
+module.exports  = function (jsonData, res) {
+   
+ 
 
-    doc.pipe(stream);
 
-    const data = jsonData?.details?.map( s => {
-        const studentInfoTwo = s.twoHundredLevel;
-        const studentInfoThree = s.threeHundredLevel;
-        const studentInfoFour = s.fourHundredLevel;
-        const studentInfoFive = s. fiveHundredLevel;
-        const studentInfoSix = s.sixHundredLevel;
-        const studentElective = s.studentElectives;
-        console.log(studentElective);
+    const doc = new PDFDocument({ margin: 30, size: "A4" });
+      
+      doc.pipe(res);
 
-        const processedStudentTwo = studentInfoTwo.map(o => {
-            return [
-                o.courses.courseTitle,  o.courses.courseScore,  o.courses.courseGrade
-            ]
-          
+      // Title
+      doc
+        .fontSize(18)
+        .text("Student Academic Report", { align: "center", underline: true });
+      doc.moveDown(1);
 
-        
+      // Student Info
+      doc.fontSize(12).text(`Name: ${jsonData.name}`);
+      doc.text(`Email: ${jsonData.email}`);
+      doc.text(`Matric No: ${jsonData.matricNo}`);
+      doc.text(`Session Admitted: ${jsonData.academicSessionAdmitted}`);
+      doc.moveDown(2);
 
-        })
-        const processedStudentTwoR= studentInfoTwo.map(o => {
-            return [
-                o.resit.courseTitle,  o.courses.courseScore,  o.courses.courseGrade
-            ]
-          
+      // Loop through academic details
+      jsonData.details.forEach((detail, idx) => {
+        doc
+          .fontSize(14)
+          .text(
+            `Level: ${detail.level} | Academic Session: ${detail.academicSession} | Status: ${detail.studentStatus}`,
+            { underline: true }
+          );
+        doc.moveDown(0.5);
 
-        
+        // Build table for courses
+        const table = {
+          headers: [
+            { label: "Course Title", property: "courseTitle", width: 150 },
+            { label: "Score", property: "courseScore", width: 60 },
+            { label: "Grade", property: "courseGrade", width: 80 },
+            { label: "Resit Score", property: "resitScore", width: 80 },
+            { label: "Resit Grade", property: "resitGrade", width: 80 },
+          ],
+          datas: detail.courses.map((course) => ({
+            courseTitle: course.courseTitle,
+            courseScore: course.courseScore || "-",
+            courseGrade: course.courseGrade || "-",
+            resitScore: course.resitScore || "-",
+            resitGrade: course.resitGrade || "-",
+          })),
+        };
 
-        })
-        const table1 = {
-            title :  "200 level", 
-            headers: ["Student courses", "student score", "student grades"],
-            rows: processedStudentTwo,
-        r
-        }
-        doc.table(table1, {width: 600});
-        doc.moveDown();
-
-            
-        const processedStudentThree = studentInfoThree.map(o => {
-            return [
-                o.courseTitle,  o.courseScore, o.courseGrade
-            ]
-          
-        })
-const table2 = {
-    title :  "300 level", 
-    headers: ["Student courses", "student score", "student grades"],
-    rows: processedStudentThree
-
-}
-doc.table(table2, {width: 600});
-doc.moveDown(1);
-        
-
-         
-         const processedStudentFour = studentInfoFour.map(o => {
-            return [
-                o.courseTitle,  o.courseScore,  o.courseGrade
-            ]
-          
-        })
-        const table3 = {
-            title :  "400 level", 
-            headers: ["Student courses", "student score", "student grades"],
-            rows: processedStudentFour
-        
-        }
-        doc.table(table3, {width: 600});
-        doc.moveDown();
-         const processedStudentFive = studentInfoFive.map(o => {
-            return [
-                o.courseTitle,  o.courseScore,  o.courseGrade
-            ]
-          
-        })
-        const table4 = {
-            title :  "500 level", 
-            headers: ["Student courses", "student score", "student grades"],
-            rows: processedStudentFive
-        
-        }
-        doc.table(table4, {width: 600});
-        doc.moveDown();
-
-         const processedStudentSix = studentInfoSix.map(o => {
-            return [
-                o.courseTitle,  o.courseScore,  o.courseGrade
-            ]
-          
-          
-        })
-        console.log(processedStudentSix)
-        const table5 = {
-            title :  "600 level", 
-            headers: ["Student courses", "student score", "student grades"],
-            rows: processedStudentSix
-        
-        }
-        console.log(table5);
-        doc.table(table5, {
-            width: 600
-        
+        doc.table(table, {
+          prepareHeader: () => doc.font("Helvetica-Bold").fontSize(10),
+          prepareRow: (row, i) =>
+            doc.font("Helvetica").fontSize(9),
         });
-        doc.moveDown();
-        const processedElectives = studentElective.map(o => {
-            return [
-                o.courseTitle, o.courseCode,  o.courseScore,  o.courseGrade
-            ]
-          
-          
-            
-        })
-        console.log(studentElective)
-        console.log(processedElectives)
 
-        const table6 = {
-            title :  "Special Electives", 
-            headers: ["course Title ", "course Code", "student score", "student grades"],
-            rows: processedElectives
-        
-        }
-        console.log(table6);
-        doc.table(table6, {
-            width: 800
-        
-        });
-        doc.moveDown();
-    })
-    doc.text(data)
+        doc.moveDown(2);
+      });
+
+   
 
     // Customize this based on your JSON structure
  
     doc.end();
 
-    console.log(`PDF generated successfully at ${outputPath}`);
+    
 }
 
 

@@ -27,27 +27,29 @@ res.status(500).json({err: "Error obtaining the transcript. Please try again lat
 }
 })
 
-router.get("/my-transcript/:id/generate", UserRouteVerification,  async(req, res) => {
-
-  const {id} = req.params;
+router.get("/my-transcript/:id/generate", UserRouteVerification, async (req, res) => {
+  const { id } = req.params;
   try {
-  const myResult =  await Student.findById(id); 
-  if (myResult) { 
- 
-    jsonToPdf(myResult);
-    res.status(200).json(myResult); 
+    const myResult = await Student.findById(id);
+    if (myResult) {
+      // ✅ set headers before streaming
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", "attachment; filename=output.pdf");
 
+      // ✅ generate PDF and stream to response
+      jsonToPdf(myResult, res);
+    } else {
+      res
+        .status(400)
+        .json({ err: "Users transcript could not be generated. Please try again later" });
+    }
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ err: "Users transcript could not be generated. Please try again later" });
   }
-  else {
-      res.status(400).json({err:"Users transcript could not be generated. Please try again later"})
-  }
-  
-  
-  } catch (err) {console.log(err)
-    res.status(500).json({err:"Users transcript could not be generated. Please try again later"})
-  
-  }
-  })
+});
 
 
 

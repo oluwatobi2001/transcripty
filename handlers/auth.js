@@ -14,7 +14,7 @@ exports.register = async(req, res, next) => {
         const hashedPassword = await bcrypt.hash(userPassword, salt);
         console.log(hashedPassword );
 
-        const checkIfAdminExist =  await Admin.findOne({ userName: userName});
+        const checkIfAdminExist =  await Admin.findOne({ userEmail: userEmail});
         if(checkIfAdminExist){ 
             res.status(400).json({msg: "User already exists. Enter a unique user details"})
         }
@@ -36,7 +36,7 @@ res.status(201).json({id, userName, token});
     }
     catch(err) {
         console.log(err)
-        res.status(500).json(err)
+        res.status(500).json({err: "requested information could not be created. Please try again later"})
 
     }
 }
@@ -61,11 +61,11 @@ exports.login = async (req, res, next) => {
         }
 
         // Destructure only after confirming loginUser exists
-        const { id, userEmail: email } = loginUser;
+        const { id, userEmail: email, userRole} = loginUser;
         
         const token = jwt.sign({ id, email }, process.env.SECRET, { expiresIn: '1h' });
 
-        return res.status(200).json({ id, email, token });
+        return res.status(200).json({ id, email, userRole , token });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: "Login failed. Please try again" });
